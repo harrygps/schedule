@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import "./App.css";
 import MonthGamePanel from "./MonthGamePanel";
+import DailyGamePanel from "./DailyGamePanel";
 
 const games = [
   {
@@ -371,23 +372,34 @@ const timeConverter = (stringTime) => {
 };
 
 function App() {
-  const monthlyGamesObj = games.reduce((acc, cur) => {
-    const monthlyGame = { ...cur };
-    let fullDate = new Date(cur.start.datetime).toString().split(" ");
-    monthlyGame.day = fullDate[0];
-    monthlyGame.month = monthConverter[fullDate[1]];
-    monthlyGame.date = parseInt(fullDate[2]);
-    monthlyGame.year = fullDate[3];
-    monthlyGame.startTime = timeConverter(fullDate[4]);
-    const key = `${monthlyGame.month} ${monthlyGame.year}`;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(monthlyGame);
-    return acc;
-  }, {});
-  const monthlyGamesArr = Object.entries(monthlyGamesObj);
-  
+  const monthlyGamesObj = games.reduce(
+    (acc, cur) => {
+      const monthlyGame = { ...cur };
+      let fullDate = new Date(cur.start.datetime).toString().split(" ");
+      monthlyGame.day = fullDate[0];
+      monthlyGame.month = monthConverter[fullDate[1]];
+      monthlyGame.date = parseInt(fullDate[2]);
+      monthlyGame.year = fullDate[3];
+      monthlyGame.startTime = timeConverter(fullDate[4]);
+      const monthlyKey = `${monthlyGame.month} ${monthlyGame.year}`;
+      if (!acc.monthly[monthlyKey]) {
+        acc.monthly[monthlyKey] = [];
+      }
+      acc.monthly[monthlyKey].push(monthlyGame);
+
+      const dailyKey = `${monthlyGame.day} ${monthlyGame.month} ${monthlyGame.date}, ${monthlyGame.year}`;
+      if (!acc.daily[dailyKey]) {
+        acc.daily[dailyKey] = [];
+      }
+      acc.daily[dailyKey].push(monthlyGame);
+
+      return acc;
+    },
+    { monthly: [], daily: [] }
+  );
+  const monthlyGamesArr = Object.entries(monthlyGamesObj.monthly);
+  const dailyGameArr = Object.entries(monthlyGamesObj.daily);
+
   return (
     <div className="App">
       <Typography fontSize={30} fontWeight={"bold"}>
@@ -395,6 +407,9 @@ function App() {
       </Typography>
       {monthlyGamesArr.map((monthGames) => (
         <MonthGamePanel games={monthGames} />
+      ))}
+      {dailyGameArr.map((dailyGames) => (
+        <DailyGamePanel games={dailyGames} />
       ))}
     </div>
   );
