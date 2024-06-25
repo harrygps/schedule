@@ -1,4 +1,6 @@
-import './App.css';
+import { Typography } from "@mui/material";
+import "./App.css";
+import MonthGamePanel from "./MonthGamePanel";
 
 const games = [
   {
@@ -343,10 +345,55 @@ const games = [
   },
 ];
 
+const monthConverter = {
+  Jan: "January",
+  Feb: "February",
+  Mar: "March",
+  Apr: "April",
+  May: "May",
+  Jun: "June",
+  Jul: "July",
+  Aug: "August",
+  Sep: "September",
+  Oct: "October",
+  Nob: "Nobember",
+  Dec: "December",
+};
+
+const timeConverter = (stringTime) => {
+  let stringTimeArr = stringTime.split(":");
+  let time = parseInt(stringTimeArr[0]);
+  let min = stringTimeArr[1];
+  let suffex = "";
+  if (time > 12) suffex = "PM";
+  else suffex = "AM";
+  return `${time}:${min} ${suffex}`;
+};
 
 function App() {
+  const monthlyGamesObj = games.reduce((acc, cur) => {
+    const monthlyGame = { ...cur };
+    let fullDate = new Date(cur.start.datetime).toString().split(" ");
+    monthlyGame.day = fullDate[0];
+    monthlyGame.month = monthConverter[fullDate[1]];
+    monthlyGame.date = parseInt(fullDate[2]);
+    monthlyGame.year = fullDate[3];
+    monthlyGame.startTime = timeConverter(fullDate[4]);
+    const key = `${monthlyGame.month} ${monthlyGame.year}`;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(monthlyGame);
+    return acc;
+  }, {});
+  const monthlyGamesArr = Object.entries(monthlyGamesObj);
+
   return (
     <div className="App">
+      <Typography>Schedule</Typography>
+      {monthlyGamesArr.map((monthGames) => (
+        <MonthGamePanel games={monthGames} />
+      ))}
     </div>
   );
 }
