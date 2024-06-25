@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import "./App.css";
 import MonthGamePanel from "./MonthGamePanel";
 import DailyGamePanel from "./DailyGamePanel";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const games = [
   {
@@ -400,17 +401,30 @@ function App() {
   const monthlyGamesArr = Object.entries(monthlyGamesObj.monthly);
   const dailyGameArr = Object.entries(monthlyGamesObj.daily);
 
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
+  const isMediumScreen = useMediaQuery(
+    "(min-width:600px) and (max-width:1200px)"
+  );
+  const isLargeScreen = useMediaQuery("(min-width:1200px)");
+
+  const renderPanels = () => {
+    if (isSmallScreen || isMediumScreen) {
+      return dailyGameArr.map((dailyGames) => (
+        <DailyGamePanel key={dailyGames[0]} games={dailyGames} />
+      ));
+    } else {
+      return monthlyGamesArr.map((monthGames) => (
+        <MonthGamePanel key={monthGames[0]} games={monthGames} />
+      ));
+    }
+  };
+
   return (
     <div className="App">
       <Typography fontSize={30} fontWeight={"bold"}>
         Schedule
       </Typography>
-      {monthlyGamesArr.map((monthGames) => (
-        <MonthGamePanel games={monthGames} />
-      ))}
-      {dailyGameArr.map((dailyGames) => (
-        <DailyGamePanel games={dailyGames} />
-      ))}
+      {renderPanels()}
     </div>
   );
 }
