@@ -387,10 +387,12 @@ function App() {
     return acc;
   }, {});
   const monthlyGamesArr = Object.entries(monthlyGamesObj);
-
+  
   return (
     <div className="App">
-      <Typography>Schedule</Typography>
+      <Typography fontSize={30} fontWeight={"bold"}>
+        Schedule
+      </Typography>
       {monthlyGamesArr.map((monthGames) => (
         <MonthGamePanel games={monthGames} />
       ))}
